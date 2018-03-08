@@ -1,6 +1,27 @@
 # chat-sample
 
-> Chat sample
+## Initial plan
+#### API
+Provide the following functions:
+- initialization (cometd, initialize-workspace, activate-channels - chat)
+- ready/notReady/dndOn/Off/logout (of chat)
+- publication of cometd ChannelStateChange/InteractionStateChange/MessageLogUpdated
+- accept/reject/leave/complete
+- sendMessage, start/stop typing notifications
+###UI
+- Handle auth code grant flow for login
+- Display interaction status
+- buttons for accept/reject/leave/complete based on capabilities (either enable/disable or not shown)
+- transcript area where messages are rendered. scrollable.
+- message input box button to send message
+- sending start/stop typing notifications
+
+## Later
+- rendering all of the above for each of multiple chat (tabs or other container mechanism)
+- visualization and manipulation of userdata
+- visualization of chat participants
+- transfer/invite/consult
+- send url
 
 ## Build Setup
 
