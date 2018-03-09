@@ -1,0 +1,7 @@
+{
+  "api": "/workspace/v3",
+  "basePath": ".",
+  "system.cometd.timeout" : "60000",
+  "APIRootServerPath" : "",
+  "logLevel": "debug"
+}

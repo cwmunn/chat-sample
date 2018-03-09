@@ -6,7 +6,6 @@
 </template>
 
 <script>
-import chatApi from '@/api/ChatApi'
 export default {
   name: 'ChatSample',
   data () {
@@ -14,7 +13,6 @@ export default {
   },
   methods: {
     accept: function () {
-      chatApi.accept('123')
     }
   }
 }

@@ -1,23 +1,32 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <router-view/>
+    <landing-page v-if='!isConnected' />
+    <router-view v-else />
   </div>
 </template>
 
 <script>
+import LandingPage from '@/views/LandingPage.vue'
 export default {
-  name: 'App'
+  name: 'App',
+  components: {
+    LandingPage
+  },
+  computed: {
+    isConnected () {
+      return this.$store.state.session.isConnected
+    }
+  },
+  mounted () {
+    // Automatic login
+    setTimeout(() => {
+      this.$store.dispatch('login')
+    }, 2000)
+  }
 }
 </script>
 
 <style>
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
