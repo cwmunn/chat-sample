@@ -9,7 +9,7 @@ Provide the following functions:
 - accept/reject/leave/complete
 - sendMessage, start/stop typing notifications
 ###UI
-- Handle auth code grant flow for login
+X Handle auth code grant flow for login
 - Display interaction status
 - buttons for accept/reject/leave/complete based on capabilities (either enable/disable or not shown)
 - transcript area where messages are rendered. scrollable.
