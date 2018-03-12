@@ -9,6 +9,7 @@ import BootstrapVue from 'bootstrap-vue'
 // import styles
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import '@/assets/style.css'
 
 Vue.config.productionTip = false
 Vue.use(BootstrapVue)
