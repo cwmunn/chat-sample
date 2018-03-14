@@ -65,17 +65,6 @@ const mutations = {
   },
   ACTIVATE_CHANNELS_SUCCEED (state, playload) {
     state.isConnected = true
-  },
-  REALTIME_MEDIA_CHANNEL_STATE_CHANGED_MESSAGE (state, playload) {
-    logger.debug('REALTIME_MEDIA_CHANNEL_STATE_CHANGED_MESSAGE ' + JSON.stringify(playload))
-    if (playload && playload.media && playload.media.channels) {
-      let media = find(playload.media.channels, (c) => {
-        return c.name === 'chat'
-      })
-      if (media) {
-        state.channel.state = media.state
-      }
-    }
   }
 }
 
