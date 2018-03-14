@@ -23,10 +23,9 @@
         <div id='user-menu'>
           <i class="lnr lnr-user"></i> <span>{{getUserFullName()}}</span>
           <div class='global-info'>
-            <b-dropdown id="ddown1" text="Change State">
-              <b-dropdown-item>Ready</b-dropdown-item>
-              <b-dropdown-item>Not Ready</b-dropdown-item>
-              <b-dropdown-item>Busy</b-dropdown-item>
+            <b-dropdown id="ddown1" :text="getChatChannelState()">
+              <b-dropdown-item v-on:click='changeChatChannelState("ready")'>Ready</b-dropdown-item>
+              <b-dropdown-item v-on:click='changeChatChannelState("not-ready")'>Not Ready</b-dropdown-item>
             </b-dropdown>
           </div>
         </div>
@@ -65,7 +64,8 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'getUserFullName'
+      'getUserFullName',
+      'getChatChannelState'
     ])
   },
   mounted () {
@@ -76,6 +76,9 @@ export default {
     },
     logout () {
       this.$store.dispatch('logout')
+    },
+    changeChatChannelState (state) {
+      this.$store.dispatch('chatChannelChangeState', {state: state})
     }
   }
 }
@@ -101,6 +104,7 @@ export default {
   }
   .navbar {
     background-color: #FF4F1F!important;
+    z-index: 1000;
     .navbar-brand {
       cursor: pointer;
     }

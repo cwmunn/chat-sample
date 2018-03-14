@@ -23,6 +23,7 @@ const createCometDInstance = (store) => {
   let cometDInstance = new RealTime(config, store)
   cometDInstance.onNotifConnected(() => {
     cometDInstance.addListener('initialization')
+    cometDInstance.addListener('media')
   })
   state.cometDInstance = cometDInstance
   return cometDInstance.connect()
@@ -41,7 +42,6 @@ const mutations = {
     if (playload.data) {
       state.user = Object.assign({}, state.user, playload.data.user)
     }
-    state.isConnected = true
   },
   REALTIME_INITIALIZATION_WORKSPACE_INITIALIZATION_FAILED (state, playload) {
     state.isConnected = false
@@ -62,13 +62,27 @@ const mutations = {
     if (playload.data) {
       state.user = Object.assign({}, state.user, playload.data.user)
     }
+  },
+  ACTIVATE_CHANNELS_SUCCEED (state, playload) {
+    state.isConnected = true
+  },
+  REALTIME_MEDIA_CHANNEL_STATE_CHANGED_MESSAGE (state, playload) {
+    logger.debug('REALTIME_MEDIA_CHANNEL_STATE_CHANGED_MESSAGE ' + JSON.stringify(playload))
+    if (playload && playload.media && playload.media.channels) {
+      let media = find(playload.media.channels, (c) => {
+        return c.name === 'chat'
+      })
+      if (media) {
+        state.channel.state = media.state
+      }
+    }
   }
 }
 
 const actions = {
   login (store) {
     logger.debug('login function')
-    axios.get(state.apiPath + '/current-session')
+    return axios.get(state.apiPath + '/current-session')
       .then((response) => {
         logger.debug(state.apiPath + '/current-session SUCCEED with:\n' + JSON.stringify(response.data, null, '\t'))
         var data = response.data
@@ -81,6 +95,10 @@ const actions = {
           })
         } else if (store) {
           store.commit('REALTIME_INITIALIZATION_WORKSPACE_INITIALIZATION_COMPLETE', data)
+          if (data && data.data && data.data.user && data.data.user.activeSession) {
+            store.commit('ACTIVATE_CHANNELS_SUCCEED')
+            store.commit('REALTIME_MEDIA_CHANNEL_STATE_CHANGED_MESSAGE', data.data.user.activeSession)
+          }
           return store.dispatch('initCometD').catch((error) => {
             logger.error('login function ' + error)
             store.dispatch('logout')
@@ -96,7 +114,6 @@ const actions = {
           window.location.href = state.apiPath + '/login?redirect_uri=' + redirectUri
         }
       })
-    return this
   },
 
   initializeWorkspace (store, context) {
@@ -110,7 +127,7 @@ const actions = {
         return store.dispatch('initCometD')
       })
       .catch((error) => {
-        logger.debug(state.apiPath + '/initialize-workspace  FAILED with:\n' + JSON.stringify(error.response, null, '\t'))
+        logger.error(state.apiPath + '/initialize-workspace  FAILED with:\n' + JSON.stringify(error.response, null, '\t'))
         throw error
       })
   },
@@ -128,7 +145,7 @@ const actions = {
         location.reload()
       })
       .catch((error) => {
-        logger.debug(state.apiPath + '/logout  FAILED with:\n' + JSON.stringify(error.response, null, '\t'))
+        logger.error(state.apiPath + '/logout  FAILED with:\n' + JSON.stringify(error.response, null, '\t'))
         throw error
       })
   },
@@ -145,12 +162,27 @@ const actions = {
     }
     createCometDInstance(store)
     return state.cometDInstance
+  },
+
+  activateChannelChatForUser (store, context) {
+    return axios.post(state.apiPath + '/activate-channels', { data: { placeName: context.placeName, channels: ['chat'] } }, { headers: { 'Content-Type': 'application/json; charset=UTF-8' } })
+      .then((response) => {
+        logger.debug(state.apiPath + '/activate-channels SUCCEED with:\n' + JSON.stringify(response.data, null, '\t'))
+        store.commit('ACTIVATE_CHANNELS_SUCCEED')
+      })
+      .catch((error) => {
+        logger.error(state.apiPath + '/activate-channels  FAILED with:\n' + JSON.stringify(error.response, null, '\t'))
+        throw error
+      })
   }
 }
 
 const getters = {
   getUserFullName: (state, getters) => () => {
     return state.user ? state.user.firstName + ' ' + state.user.lastName : ''
+  },
+  getUser: (state, getters) => () => {
+    return state.user
   }
 }
 
