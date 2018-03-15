@@ -24,6 +24,7 @@ const createCometDInstance = (store) => {
   cometDInstance.onNotifConnected(() => {
     cometDInstance.addListener('initialization')
     cometDInstance.addListener('media')
+    cometDInstance.addListener('media/chat')
   })
   state.cometDInstance = cometDInstance
   return cometDInstance.connect()

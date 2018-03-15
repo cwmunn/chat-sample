@@ -25,7 +25,7 @@ export default class {
     this.cometDHelper.addListener = _.bind((channel, callback, deferred) => {
       if (channel && !this.subsriptions[channel] && this.store) {
         this.subsriptions[channel] = _addListener.call(this.cometDHelper, channel, (msg) => {
-          let key = 'REALTIME_' + channel.toUpperCase()
+          let key = 'REALTIME_' + channel.replace(/\//g, '_').toUpperCase()
           if (msg && msg.data && msg.data.messageType) {
             key = key + '_' + _.camelCase(msg.data.messageType).replace(/([A-Z])/g, ($1) => { return '_' + $1.toLowerCase() }).toUpperCase()
           }

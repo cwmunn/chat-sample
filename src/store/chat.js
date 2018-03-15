@@ -1,5 +1,6 @@
 import Logger from 'logger'
 import find from 'lodash/find'
+import filter from 'lodash/filter'
 import axios from 'axios'
 
 const logger = new Logger('ChatManager')
@@ -7,7 +8,8 @@ const state = {
   channel: {
     name: 'chat',
     state: 'unknown'
-  }
+  },
+  interactions: []
 }
 
 const mutations = {
@@ -19,6 +21,23 @@ const mutations = {
       })
       if (media) {
         state.channel.state = media.state
+      }
+    }
+  },
+  REALTIME_MEDIA_CHAT_INTERACTION_STATE_CHANGED (state, playload) {
+    logger.debug('REALTIME_MEDIA_CHAT_INTERACTION_STATE_CHANGED ' + JSON.stringify(playload))
+    if (playload && playload.interaction) {
+      // first need to find if the interaction already exist in store
+      let interaction = find(state.interactions, (i) => {
+        return i.id === playload.interaction.id
+      })
+      if (interaction) {
+        let index = state.interactions.indexOf(interaction)
+        interaction = Object.assign({}, interaction, playload.interaction)
+        state.interactions.splice(index, 1, interaction)
+      } else {
+        // if not add this one in the interactions array
+        state.interactions.push(playload.interaction)
       }
     }
   }
@@ -62,6 +81,11 @@ const actions = {
 const getters = {
   getChatChannelState: (state, getters) => () => {
     return state.channel.state
+  },
+  getToastedChatInteractions: (state, getters) => () => {
+    return filter(state.interactions, (i) => {
+      return i.state === 'Invited'
+    })
   }
 }
 

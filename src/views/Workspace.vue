@@ -47,15 +47,20 @@
         </div>
       </div>
     </side-bar-navigation>
+    <div class="toast-container">
+      <chat-toast v-for="interaction in getToastedChatInteractions()" v-bind:chat="interaction" v-bind:key="interaction.id"></chat-toast>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import SideBarNavigation from '@/components/SideBarNavigation'
+import ChatToast from '@/components/ChatToast'
 export default {
   components: {
-    SideBarNavigation
+    SideBarNavigation,
+    ChatToast
   },
   data () {
     return {
@@ -65,7 +70,8 @@ export default {
   computed: {
     ...mapGetters([
       'getUserFullName',
-      'getChatChannelState'
+      'getChatChannelState',
+      'getToastedChatInteractions'
     ])
   },
   mounted () {
@@ -108,6 +114,12 @@ export default {
     .navbar-brand {
       cursor: pointer;
     }
+  }
+  .toast-container {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 450px;
   }
 </style>
 <style lang="less">
