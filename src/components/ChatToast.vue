@@ -12,10 +12,10 @@
       {{chat.subject}}
     </div>
     <div class="button-container">
-      <b-button variant="secondary">
+      <b-button variant="secondary" v-on:click='rejectChat()'>
         Reject
       </b-button>
-      <b-button variant="primary">
+      <b-button variant="primary" v-on:click='acceptChat()'>
         Accept
       </b-button>
     </div>
@@ -29,6 +29,14 @@ export default {
     chat: {
       type: Object,
       required: true
+    }
+  },
+  methods: {
+    rejectChat: function () {
+      this.$store.dispatch('chatReject', {id: this.chat.id})
+    },
+    acceptChat: function () {
+      this.$store.dispatch('chatAccept', {id: this.chat.id})
     }
   }
 }

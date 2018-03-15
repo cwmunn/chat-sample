@@ -1,6 +1,7 @@
 import Logger from 'logger'
 import find from 'lodash/find'
 import filter from 'lodash/filter'
+import trim from 'lodash/trim'
 import axios from 'axios'
 
 const logger = new Logger('ChatManager')
@@ -44,11 +45,27 @@ const mutations = {
 }
 
 const actions = {
-  chatAccept ({ commit }, {id}) {
-    console.log(`[${id}] accept...`)
+  chatAccept ({ commit, rootState }, {id}) {
+    logger.debug(`[${id}] accept...`)
+    return axios.post(rootState.session.apiPath + `/media/chat/interactions/${id}/accept`, { data: {} }, { headers: { 'Content-Type': 'application/json; charset=UTF-8' } })
+      .then((response) => {
+        logger.debug(rootState.session.apiPath + `/media/chat/interactions/${id}/accept SUCCEED with:\n` + JSON.stringify(response.data, null, '\t'))
+      })
+      .catch((error) => {
+        logger.error(rootState.session.apiPath + `/media/chat/interactions/${id}/accept FAILED with:\n` + JSON.stringify(error.response, null, '\t'))
+        throw error
+      })
   },
-  chatReject ({ commit }, {id}) {
-    console.log(`[${id}] reject...`)
+  chatReject ({ commit, rootState }, {id}) {
+    logger.debug(`[${id}] reject...`)
+    return axios.post(rootState.session.apiPath + `/media/chat/interactions/${id}/reject`, { data: {} }, { headers: { 'Content-Type': 'application/json; charset=UTF-8' } })
+      .then((response) => {
+        logger.debug(rootState.session.apiPath + `/media/chat/interactions/${id}/reject SUCCEED with:\n` + JSON.stringify(response.data, null, '\t'))
+      })
+      .catch((error) => {
+        logger.error(rootState.session.apiPath + `/media/chat/interactions/${id}/reject FAILED with:\n` + JSON.stringify(error.response, null, '\t'))
+        throw error
+      })
   },
   chatLeave ({ commit }, {id}) {
     console.log(`[${id}] leave...`)
@@ -86,6 +103,28 @@ const getters = {
     return filter(state.interactions, (i) => {
       return i.state === 'Invited'
     })
+  },
+  getActiveChatInteractions: (state, getters) => () => {
+    return filter(state.interactions, (i) => {
+      return i.state !== 'Invited' && i.state !== 'Revoked' && i.state !== 'Completed'
+    })
+  },
+  getChatContact: (state, getter) => (idChat) => {
+    const chat = find(state.interactions, (i) => {
+      return i.id === idChat
+    })
+    if (chat && chat.userData) {
+      const firstName = find(chat.userData, (u) => {
+        return u.key === 'FirstName'
+      })
+      const lastName = find(chat.userData, (u) => {
+        return u.key === 'LastName'
+      })
+      const _ln = lastName ? lastName.value || ' ' : ' '
+      const _fn = firstName ? firstName.value || ' ' : ' '
+      return {displayName: trim(_fn + ' ' + _ln), initial: trim(_fn[0].toUpperCase() + _ln[0].toUpperCase())}
+    }
+    return {}
   }
 }
 

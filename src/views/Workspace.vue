@@ -30,14 +30,9 @@
           </div>
         </div>
         <ul class="nav flex-column">
-          <li class="nav-item">
+          <li class="nav-item" v-for="interaction in getActiveChatInteractions()" v-bind:key="interaction.id">
             <a class="nav-link">
-              <i>TP</i> <span>Thomas Pariaud</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link">
-              <i>CM</i> <span>Chris Munn</span>
+              <i>{{getChatContact(interaction.id).initial}}</i> <span>{{getChatContact(interaction.id).displayName}}</span>
             </a>
           </li>
         </ul>
@@ -71,7 +66,9 @@ export default {
     ...mapGetters([
       'getUserFullName',
       'getChatChannelState',
-      'getToastedChatInteractions'
+      'getToastedChatInteractions',
+      'getActiveChatInteractions',
+      'getChatContact'
     ])
   },
   mounted () {
